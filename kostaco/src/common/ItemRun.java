@@ -24,7 +24,7 @@ public class ItemRun {
             System.out.println(" ║ 3. 상품 전체 조회               ║");
             System.out.println(" ║ 4. 상품 수정                 ║");
             System.out.println(" ║ 5. 상품 삭제                ║");
-
+            System.out.println(" ║ 0. 종료                   ║");
             System.out.println("  =====================KOSTACO====");
 
             System.out.print("입력 : ");
@@ -128,7 +128,9 @@ public class ItemRun {
                     System.out.println("제품을 입력해주세요.");
                     itemDAO.deleteByName(sc.nextLine());
                     break;
-
+    			case 0 :
+    				System.out.println("프로그램을 종료합니다.");
+    				return;
 
                 // 추가적인 case들 구현...
                 default:

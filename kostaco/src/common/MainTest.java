@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class MainTest {
     public static void main(String[] args) {
         ItemRun itemRun = new ItemRun();
-
+        OrdersRun ordersRun = new OrdersRun();
 
         Scanner sc = new Scanner(System.in);
         while (true) {
@@ -28,6 +28,9 @@ public class MainTest {
                 case 1:
                     itemRun.itemRun(sc);
                     break;
+                case 3 :
+                	ordersRun.orderRun(sc);
+                	break;
             }
         }
     }
