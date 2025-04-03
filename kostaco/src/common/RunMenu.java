@@ -257,8 +257,7 @@ public class RunMenu {
         	
           			break;
         		case 9 :
-
-                    
+                  
                     System.out.print("고객명을 입력하세요.[비회원이면 비회원 입력]==> ");
                     custName = sc.next();
                     sc.nextLine();
@@ -304,17 +303,15 @@ public class RunMenu {
 		        			orderQty = sc.nextInt();
 		        			sc.nextLine();
 		        			ordersDetailDAO.insertReceipt(ordersId, itemId, orderQty);
-		        			itemDAO.updateItem(itemId, ordersDetailDAO.findByOrdersIdAndItemId(ordersId, itemId));
-		        			
+
+		        			itemDAO.updateItem(itemId, ordersDetailDAO.findByOrdersIdAndItemId(ordersId, itemId));		        			
 		     		}
-	        			for(OrdersDetailVO odVO : ordersDetailDAO.receiptList(ordersId)) {
-	        				 // 재고 차감
-	        			}
-	        			ordersDetailDAO.printReceipt(ordersDetailDAO.receiptList(ordersId));
+	        			ordersDetailDAO.printReceipt(ordersId, custName);
         			}else {
         				System.out.println("입력 오류");
         				break;
         			}
+        			
         			break;
                 default:
                     System.out.println("잘못된 선택입니다. 다시 입력해 주세요.");

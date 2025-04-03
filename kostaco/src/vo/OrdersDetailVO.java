@@ -17,6 +17,7 @@ public class OrdersDetailVO {
 		this.ordersPromo = ordersPromo;
 		this.ordersPrice = ordersPrice;
 	}
+	
 	public String getOrdersPromo() {
 		return ordersPromo;
 	}

@@ -75,13 +75,14 @@ public class OrdersDetailDAO {
 			if(rs.next()) {
 				custId = rs.getInt("cust_id");
 				orderName = rs.getString("item_name");
+
+				if(custId > 0 ) ordersPrice = (int) ((ordersQty * rs.getInt("item_price")) * (0.9));
+				else ordersPrice = ordersQty * rs.getInt("item_price");
 				
 				if("1+1".equals(rs.getString("item_promo"))){ 
 					ordersQty *= 2;
 					promo = "1+1";
 				}
-				if(custId > 0 ) ordersPrice = (int) ((ordersQty * rs.getInt("item_price")) * (0.9));
-				else ordersPrice = ordersQty * rs.getInt("item_price");
 			}
 			ConnectionProvider.close(subconn, subpstmt);
 		
@@ -105,73 +106,25 @@ public class OrdersDetailDAO {
 			System.out.println("예외발생:" + e.getMessage());
 		}
 	}
-	
-	public void printReceipt(List<OrdersDetailVO> list) {
-		int total = 0;
-		int count = 0;
-		System.out.printf("║ %-10s %4s %-4s %5s ║\n", "상품명", "수량", "프로모션", "합계");
-		for(OrdersDetailVO odVO : list) {
-			System.out.printf("║ %-10s %4s %-4s %5s ║\n", odVO.getOrdersItem(), odVO.getOrdersQty(), odVO.getOrdersPromo(), odVO.getOrdersPrice());
-			total += odVO.getOrdersPrice();
-			count += odVO.getOrdersQty();
-		}
+
+	public void printReceipt(int ordersId, String custName) {
+		 String sql = "SELECT o.orders_id, o.cust_id, c.cust_name, o.created, o.pay_type, o.card_no " +
+                 "FROM orders o " +
+                 "LEFT JOIN customer c ON o.cust_id = c.cust_id " +
+                 "WHERE o.orders_id = ?";
 		
-		System.out.printf("║ %-10s %5d %5d ║\n", "합계/금액", count, total);
-		System.out.println("===============================================");
-	}
-	
-	public List<OrdersDetailVO> receiptList(int ordersId){
-		List<OrdersDetailVO> list = new ArrayList<OrdersDetailVO>();
-		
-		String sql = "SELECT orders_item, orders_qty, orders_promo, orders_price FROM orders_detail WHERE orders_id = ?";
-		
-		try {
+		try (
 			Connection conn = ConnectionProvider.getConnection();
-			PreparedStatement pstmt = conn.prepareStatement(sql);
-			
+			PreparedStatement pstmt = conn.prepareStatement(sql)
+		) {
 			pstmt.setInt(1, ordersId);
 			ResultSet rs = pstmt.executeQuery();
 			
-			
-			while(rs.next()) {
-				printReceiptBody(
-						rs.getInt("cust_id"),
-						rs.getString("cust_name"),
-						rs.getTimestamp("created").toLocalDateTime(),
-						rs.getString("pay_type"),
-						rs.getString("card_no"),
-						rs.getInt("orders_id")
-					);
-				
-				OrdersDetailVO odVO = new OrdersDetailVO();
-				odVO.setOrdersItem(rs.getString("orders_item"));
-				odVO.setOrderQty(rs.getInt("orders_qty"));
-				odVO.setOrdersPromo(rs.getString("orders_promo"));
-				odVO.setOrdersPrice(rs.getInt("orders_price"));
-				list.add(odVO);
-			}
-			ConnectionProvider.close(conn, pstmt, rs);
-		} catch (Exception e) {
-			System.out.println("예외발생:" + e.getMessage());
-		}
-		return list;
-	}
-
-	public void printReceipt(String custName) {
-		String sql = "SELECT o.orders_id, c.cust_id, c.cust_name, o.created, o.pay_type, o.card_no " +
-				     "FROM orders o JOIN customer c ON o.cust_id = c.cust_id " +
-				     "WHERE c.cust_name = ?";
-		try {
-			Connection conn = ConnectionProvider.getConnection();
-			PreparedStatement pstmt = conn.prepareStatement(sql);
-		
-			pstmt.setString(1, custName);
-			ResultSet rs = pstmt.executeQuery();
-
 			while (rs.next()) {
+				
 				printReceiptBody(
 					rs.getInt("cust_id"),
-					rs.getString("cust_name"),
+					custName,
 					rs.getTimestamp("created").toLocalDateTime(),
 					rs.getString("pay_type"),
 					rs.getString("card_no"),
@@ -183,6 +136,8 @@ public class OrdersDetailDAO {
 			System.out.println("예외발생: " + e.getMessage());
 		}
 	}
+	
+
 	// 영수증 출력 - 주문번호, 날짜 기준
 	public void printReceipt(String custName, String created) {
 		
@@ -222,15 +177,17 @@ public class OrdersDetailDAO {
 			}
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		String formattedDate = created.format(formatter);
-		System.out.println("=================================");
-		System.out.println("║         🛒 KOSTACO 🛒          ║");
-		System.out.println("=================================");
-		System.out.printf("║ %-5s : %-20s ║\n", "고객명", custName);
-		System.out.printf("║ %-5s : %-20s ║\n", "결제 날짜", formattedDate);
-		System.out.printf("║ %-5s : %-20d ║\n", "주문 번호", ordersId);
-		System.out.printf("║ %-5s : %-19s ║\n", "결제 수단", payType);
-		System.out.printf("║ %-5s : %-20s ║\n", "카드 번호", cardNo);
-		System.out.println("=================================");
+	    System.out.println("╔════════════════════════════════════════╗");
+	    System.out.println("║            🛒 KOSTACO 영수증           ║");
+	    System.out.println("╠════════════════════════════════════════╣");
+	    System.out.printf("║ %-8s : %-25s║\n", "고객명", custName);
+	    System.out.printf("║ %-8s : %-25s║\n", "결제 날짜", formattedDate);
+	    System.out.printf("║ %-8s : %-25d║\n", "주문 번호", ordersId);
+	    System.out.printf("║ %-8s : %-25s║\n", "결제 수단", payType);
+	    System.out.printf("║ %-8s : %-25s║\n", "카드 번호", cardNo);
+	    System.out.println("╠════════════════════════════════════════╣");
+	    System.out.printf("║ %-10s %-6s %-8s %9s ║\n", "상품명", "수량", "프로모션", "합계");
+	    System.out.println("╠════════════════════════════════════════╣");
 		
 		String detailSql = "SELECT orders_item, orders_qty, orders_promo, orders_price FROM orders_detail WHERE orders_id = ?";;
 		try {
@@ -240,7 +197,6 @@ public class OrdersDetailDAO {
 			ResultSet rs = pstmt.executeQuery();
 			int total = 0;
 			int count = 0;
-			System.out.printf("║ %-6s %-4s %-4s %8s ║\n", "상품명", "수량", "프로모션", "합계");
 			while (rs.next()) {//주문한 상품의 정보
 				String orderItem = rs.getString("orders_item"); //orders_detail에 저장된 상품명
 				int price = rs.getInt("orders_price");////orders_detail에 저장된 상품 가격
@@ -248,12 +204,12 @@ public class OrdersDetailDAO {
 				String promo = rs.getString("orders_promo");
 				total += rs.getInt("orders_price");
 				count += rs.getInt("orders_qty");
-				System.out.printf("║%-6s %6d %5s %,8d원 ║\n", orderItem, qty, promo, price);
+				System.out.printf("║ %-7s %-6d %-3s %,9d원 ║\n", orderItem, qty, promo, price);
 			}
 			
-			System.out.println("==================================");
-			System.out.printf("║ %-10s:    %3d개/%,8d원║\n", "합계/금액", count, total);
-			System.out.println("=======================KOSTACO====\n");
+	        System.out.println("╠════════════════════════════════════════╣");
+	        System.out.printf("║ %-10s : %4d개 / %,9d원 ║\n", "합계/금액", count, total);
+	        System.out.println("╚════════════════════════════════════════╝");
 			
 			ConnectionProvider.close(conn, pstmt, rs);
 		} catch (Exception e) {
