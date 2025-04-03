@@ -1,6 +1,7 @@
 package dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -50,6 +51,23 @@ public class OrdersDAO {
 		}
 		return re;
 	}
+	public List<Integer> findByCustNameAndCreadted(String custName, String created) {
+		String sql = "SELECT orders_id FROM orders o WHERE TO_CHAR(created, 'yyyy/mm/dd') = ? AND cust_id in (SELECT cust_id FROM customer WHERE cust_name = ?)";
+		List<Integer> orderIds = new ArrayList<>();
+		
+		try {
+			Connection conn = ConnectionProvider.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, created);
+			pstmt.setString(2, custName);
+			
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) orderIds.add(rs.getInt("orders_id"));
+		} catch (Exception e) {
+			System.out.println("예외발생: " + e.getMessage());
+		}
+		return orderIds;
+	}
 	// 주문 등록
 	public int insertOrders (int custId, String cardNo, String payType) {
 		String sql = "insert into orders (orders_id, created, cust_id, card_no, pay_type) values(?,?,?,?,?)";
@@ -63,7 +81,6 @@ public class OrdersDAO {
 			pstmt.setTimestamp(2, sqlnowDate);
 		
 			pstmt.setInt(3, custId);
-			
 			pstmt.setString(4, cardNo); 
 			pstmt.setString(5, payType);
 			
@@ -75,8 +92,6 @@ public class OrdersDAO {
 			System.out.println("예외발생:주문등록"+e.getMessage());
 			return 0;
 		}
-		
-		
 	}
 	
 	// 주문 삭제
@@ -128,8 +143,6 @@ public class OrdersDAO {
 		} catch (Exception e) {
 			System.out.println("예외발생:주문전체 "+e.getMessage());
 		}
-		
-		
 		return ordersList; 
 	}
 	
