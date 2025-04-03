@@ -6,6 +6,9 @@ import dao.OrdersDAO;
 import dao.OrdersDetailDAO;
 import vo.CustomerVO;
 import vo.ItemVO;
+import vo.OrdersVO;
+import vo.OrdersDetailVO;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -21,14 +24,16 @@ public class RunMenu {
 	int itemId, itemQty, itemPrice;
 	String itemName, itemManuf, itemPromo;
     
-    
-    
     //customer 변수
     String custName, custBirth, custAddr, custPhone; //상품 정보를 담을 변수
     ArrayList<CustomerVO> custList;
     
-    String ordersDetailName;
+    String ordersDetailName, ordersCreated;
     
+    
+	int ordersId, orderQty, custId;
+	String payType, cardNo;
+	
     int re; //menu ==> 메뉴 선택을 위한 변수
     
     private boolean isInteger(String str) {
@@ -42,21 +47,21 @@ public class RunMenu {
 	public void run() {
 		Scanner sc = new Scanner(System.in);
 		while (true) {
-	           System.out.println("========================================");
-	           System.out.println("║       🛒 KOSTACO 매장관리시스템 🛒      ║");
-	           System.out.println("========================================");
-	           System.out.println("========================================");
-	           System.out.println(" ║ 1. 상품 등록                          ║");
-	           System.out.println(" ║ 2. 상품 조회                          ║");
-	           System.out.println(" ║ 3. 전체 상품 조회                      ║");
-	           System.out.println(" ║ 4. 상품 삭제                          ║");
-	           System.out.println(" ║ 5. 회원 등록                          ║");
-	           System.out.println(" ║ 6. 회원 조회                          ║");
-	           System.out.println(" ║ 7. 회원 삭제                          ║");
-	           System.out.println(" ║ 8. 구매 내역 조회 (영수증)              ║");
-	           System.out.println(" ║ 9. 상품 구매                          ║");
-	           System.out.println(" ║ 0. 종료                              ║");
-	           System.out.println("=============================KOSTACO====");
+	           System.out.println("==================================");
+	           System.out.println("║     🛒 KOSTACO 매장관리시스템 🛒    ║");
+	           System.out.println("==================================");
+	           System.out.println("==================================");
+	           System.out.println("║ 1. 상품 등록                      ║");
+	           System.out.println("║ 2. 상품 조회                      ║");
+	           System.out.println("║ 3. 상품 조회                      ║");
+	           System.out.println("║ 4. 상품 삭제                      ║");
+	           System.out.println("║ 5. 회원 등록                      ║");
+	           System.out.println("║ 6. 회원 조회                      ║");
+	           System.out.println("║ 7. 회원 삭제                      ║");
+	           System.out.println("║ 8. 내역 조회                      ║");
+	           System.out.println("║ 9. 상품 구매                      ║");
+	           System.out.println("║ 0. 프로그램 종료                   ║");
+	           System.out.println("=======================KOSTACO====");
 	
 	           System.out.print("입력 : ");
 	           int choice = sc.nextInt();
@@ -244,11 +249,15 @@ public class RunMenu {
           		case 8 : 
         			System.out.print("조회할 회원의 이름을 입력하세요. [회원이 아닐 시 비회원 입력] ==> ");
         			ordersDetailName = sc.next();
-        			ordersDetailDAO.printReceipt(ordersDetailName);
-        			break;
+        			
+        			System.out.print("조회할 날짜를 입력하세요. [입력 예시: 0000/00/00]");
+        			ordersCreated = sc.next();
+
+        			ordersDetailDAO.printReceipt(ordersDetailName, ordersCreated);
+        	
+          			break;
         		case 9 :
-        			int ordersId, itemId, orderQty, custId;
-        			String payType, cardNo;
+
                     
                     System.out.print("고객명을 입력하세요.[비회원이면 비회원 입력]==> ");
                     custName = sc.next();
@@ -260,22 +269,19 @@ public class RunMenu {
                     	custPhone = sc.next();
                     	custId = customerDAO.findCustByNameAndPhone(custName, custPhone);
                     }
-
         			System.out.print("결제 수단을 입력하세요.[현금/카드]==> ");
         			payType = sc.next();
         			sc.nextLine();
         			
         			System.out.print("카드 번호를 입력하세요. [현금: null 또는 0000]==> ");
         			cardNo = sc.nextLine();
-
         			
         			ordersId = ordersDAO.insertOrders(custId, cardNo, payType);
 
-                    //ordersId = ordersDAO.getOrdersId();
         			if(ordersId > 0) {
 	        			while(true) {
 	        				List<ItemVO> itemlist = itemDAO.findAllItem();
-
+	        				
 	        				System.out.println("-------------------------------------");
 	        				System.out.println("║            전체 상품 목록            ║");
 	        				System.out.println("-------------------------------------");
@@ -289,33 +295,26 @@ public class RunMenu {
 	        				            item.getItemPromo(),
 	        				            item.getItemPrice());
 	        				}
-	        				System.out.println("║                                    ║");
-	        				System.out.println("-------------------------------------");
 		        			System.out.print("구매할 상품을 선택해주세요.[0 입력 시 구매 종료]==> ");
 		        			itemId = sc.nextInt();
 		        			if(itemId == 0) break;
 		        			sc.nextLine();
 		        			
-		        			
 		        			System.out.print("구매할 수량을 입력해주세요.==> ");
 		        			orderQty = sc.nextInt();
 		        			sc.nextLine();
-		        			
 		        			ordersDetailDAO.insertReceipt(ordersId, itemId, orderQty);
-		        			ItemVO item = itemDAO.findById(itemId); // 상품 정보 가져오기
-
-		        			int displayQty = orderQty;
-		        			if ("1+1".equals(item.getItemPromo())) {
-		        			    displayQty = orderQty * 2; // 프로모션이면 수량 2배 차감
-		        			}
-		        			itemDAO.updateItem(itemId, displayQty); // 재고 차감
+		        			itemDAO.updateItem(itemId, ordersDetailDAO.findByOrdersIdAndItemId(ordersId, itemId));
+		        			
+		     		}
+	        			for(OrdersDetailVO odVO : ordersDetailDAO.receiptList(ordersId)) {
+	        				 // 재고 차감
 	        			}
+	        			ordersDetailDAO.printReceipt(ordersDetailDAO.receiptList(ordersId));
         			}else {
         				System.out.println("입력 오류");
         				break;
         			}
-        			
-        			ordersDetailDAO.printReceipt(ordersId);
         			break;
                 default:
                     System.out.println("잘못된 선택입니다. 다시 입력해 주세요.");
