@@ -1,13 +1,34 @@
 package common;
 
+import java.util.Scanner;
+
 public class MainTest {
+    public static void main(String[] args) {
+        ItemRun itemRun = new ItemRun();
 
-	public static void main(String[] args) {
-		
-		RunMenu run = new RunMenu();
-		
-		run.run();
 
-	}
+        Scanner sc = new Scanner(System.in);
+        while (true) {
 
+            System.out.println("==================================");
+            System.out.println("║     🛒 KOSTACO 매장관리시스템 🛒    ║");
+            System.out.println("==================================");
+            System.out.println("==================================");
+            System.out.println("║ 1. 상품                         ║");
+            System.out.println("║ 2. 회원                         ║");
+            System.out.println("║ 3. 주문                         ║");
+            System.out.println("║ 0. 프로그램 종료                   ║");
+            System.out.println("=======================KOSTACO====");
+
+            System.out.println("선택: ");
+            int choice = sc.nextInt();
+            sc.nextLine();
+
+            switch (choice) {
+                case 1:
+                    itemRun.itemRun(sc);
+                    break;
+            }
+        }
+    }
 }
