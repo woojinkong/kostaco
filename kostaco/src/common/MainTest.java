@@ -6,6 +6,7 @@ public class MainTest {
     public static void main(String[] args) {
         ItemRun itemRun = new ItemRun();
         OrdersRun ordersRun = new OrdersRun();
+        CustomerRun customerRun = new CustomerRun();
 
         Scanner sc = new Scanner(System.in);
         while (true) {
@@ -28,6 +29,9 @@ public class MainTest {
                 case 1:
                     itemRun.itemRun(sc);
                     break;
+                case 2:
+                	customerRun.runCustomer(sc);
+                	break;
                 case 3 :
                 	ordersRun.orderRun(sc);
                 	break;

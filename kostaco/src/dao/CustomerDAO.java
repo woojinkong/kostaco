@@ -172,5 +172,94 @@ public class CustomerDAO {
         }
         return index + 1;
     }
+    
+    
+    //특정기간동안 구매금액이 가장 큰 고객 리스트를 원하는 수만큼 가져오는 메소드
+    //date1~ date2 기간사이 구매금액이 가장 큰 고객을 count만큼 구하는 메소드
+    //예 : 2024/05/12 부터 2025/12/12 까지 매출순으로 고객 5명을 가져온다.
+    //가져오는 정보 = 고객번호, 고객매출
+    public ArrayList<CustomerVO> findVipCustomer(String date1, String date2, int custcount) {
+    	ArrayList<CustomerVO> list = new ArrayList<CustomerVO>();
+    	
+    	String sql = "select * "
+    			+ "from (select c.cust_id, sum(orders_price) Sum "
+    			+ "from orders_detail od , orders o, customer c "
+    			+ "where c.cust_id = o.cust_id and o.orders_id = od.orders_id "
+    			+ "and o.created between  TO_DATE(?, 'YYYY/MM/DD') and TO_DATE(?, 'YYYY/MM/DD') "
+    			+ "group by c.cust_id "
+    			+ "having c.cust_id <> 0 "
+    			+ "order by Sum desc) "
+    			+ "where rownum <= ?";
+    	
+    	
+    	try {
+    		Connection conn = ConnectionProvider.getConnection();
+			PreparedStatement prst = conn.prepareStatement(sql);
+			prst.setString(1, date1);
+			prst.setString(2, date2);
+			prst.setInt(3, custcount);
+			ResultSet rs = prst.executeQuery();
+			while(rs.next()) {
+				list.add(new CustomerVO(
+						getCustByCustid(rs.getInt(1)).getCustId(),
+						getCustByCustid(rs.getInt(1)).getCustName(),
+						getCustByCustid(rs.getInt(1)).getCustBirth(),
+						getCustByCustid(rs.getInt(1)).getCustAddr(),
+						getCustByCustid(rs.getInt(1)).getCustPhone(),
+						rs.getInt(2)));	
+
+			}
+			ConnectionProvider.close(conn, prst,rs);
+			
+		} catch (SQLException e) {
+			System.out.println("예외발생 : " + e.getMessage());
+		}
+    	
+    	
+    	return list;
+    }
+    
+    
+    //고객 취향 분석을 위하여
+    //특정 상품을 가장 많이 구입한 고객순을 N번째(count)고객까지 조회하는 메소드
+    //고객번호 cust_id 를 반환하여 리스트로 넣는다.
+    public ArrayList<CustomerVO> findCustByItem(String itemName, int count){
+    	ArrayList<CustomerVO> list = new ArrayList<CustomerVO>();
+
+    	String sql = "select cust_id, total "
+    			+ "from (select cust_id, sum(orders_qty) total "
+    			+ "from orders o, orders_detail d, item i "
+    			+ "where o.orders_id = d.orders_id and i.item_id =  d.item_id and item_name = ? "
+    			+ "group by cust_id "
+    			+ "order by total desc) "
+    			+ "where rownum <= ?";
+    	
+
+    	Connection conn = ConnectionProvider.getConnection();
+
+    	
+    	try {
+			PreparedStatement prst = conn.prepareStatement(sql);
+			prst.setString(1, itemName);
+			prst.setInt(2, count);
+			ResultSet rs = prst.executeQuery();
+			while(rs.next()) {
+				list.add(new CustomerVO(
+						getCustByCustid(rs.getInt(1)).getCustId(),
+						getCustByCustid(rs.getInt(1)).getCustName(),
+						getCustByCustid(rs.getInt(1)).getCustBirth(),
+						getCustByCustid(rs.getInt(1)).getCustAddr(),
+						getCustByCustid(rs.getInt(1)).getCustPhone()
+						));	
+			}
+			ConnectionProvider.close(conn, prst, rs);
+			
+		} catch (SQLException e) {
+			System.out.println("예외발생 : " + e.getMessage());
+		}
+    	return list;
+    }
+    
+    
 
 }

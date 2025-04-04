@@ -55,22 +55,5 @@ public class ConnectionProvider {
         }
     }
     
-    // 03.28 22:10 PreparedStatement close 추가
-	public static void close(Connection conn, PreparedStatement prst, ResultSet rs) {
-		try {
-			if(rs != null) rs.close();
-			if(prst != null) prst.close();
-			if(conn != null) conn.close();
-		} catch (Exception e) {
-			System.out.println("예외발생 : " + e.getMessage());
-		}
-	}
-	public static void close(Connection conn, PreparedStatement prst) {
-		try {
-			if(prst != null) prst.close();
-			if(conn != null) conn.close();
-		} catch (Exception e) {
-			System.out.println("예외발생 : " + e.getMessage());
-		}
-	}
+
 }

@@ -244,7 +244,7 @@ public class RunMenu {
           		case 8 : 
         			System.out.print("조회할 회원의 이름을 입력하세요. [회원이 아닐 시 비회원 입력] ==> ");
         			ordersDetailName = sc.next();
-        			ordersDetailDAO.printReceipt(ordersDetailName);
+        			//ordersDetailDAO.printReceipt(ordersDetailName);
         			break;
         		case 9 :
         			int ordersId, itemId, orderQty, custId;
@@ -315,7 +315,7 @@ public class RunMenu {
         				break;
         			}
         			
-        			ordersDetailDAO.printReceipt(ordersId);
+        			//ordersDetailDAO.printReceipt(ordersId);
         			break;
                 default:
                     System.out.println("잘못된 선택입니다. 다시 입력해 주세요.");

@@ -10,6 +10,9 @@ public class CustomerVO {
     private String  custBirth;
     private String custAddr;
     private String custPhone;
+    
+    //고객 구매금액 조회를 위한 custSalePrice추가  - 04/03
+    private int custSalePrice;
 
     public String getCustAddr() {
         return custAddr;
@@ -53,12 +56,29 @@ public class CustomerVO {
 
     public CustomerVO() {
     }
+    
+    public int getCustSalePrice() {
+		return custSalePrice;
+	}
 
-    public CustomerVO(int custId, String custName, String custBirth, String custAddr, String custPhone) {
+	public void setCustSalePrice(int custSalePrice) {
+		this.custSalePrice = custSalePrice;
+	}
+
+	public CustomerVO(int custId, String custName, String custBirth, String custAddr, String custPhone) {
         this.custAddr = custAddr;
         this.custBirth = custBirth;
         this.custId = custId;
         this.custName = custName;
         this.custPhone = custPhone;
+    }
+    
+    public CustomerVO(int custId, String custName, String custBirth, String custAddr, String custPhone, int custPrice) {
+        this.custAddr = custAddr;
+        this.custBirth = custBirth;
+        this.custId = custId;
+        this.custName = custName;
+        this.custPhone = custPhone;
+        this.custSalePrice = custPrice;
     }
 }
