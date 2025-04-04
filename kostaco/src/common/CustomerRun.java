@@ -18,7 +18,8 @@ public class CustomerRun {
 			System.out.println("  =====================KOSTACO====");
 			System.out.println(" ║ 1. 회원 등록                     ");
 			System.out.println(" ║ 2. 회원 조회                     ");
-			System.out.println(" ║ 3. 회원 삭제                     ");
+			System.out.println(" ║ 3. 회원 수정                     ");
+			System.out.println(" ║ 4. 회원 삭제                     ");
 			System.out.println(" ║ 0. 종료                         ");
 			System.out.println("  =====================KOSTACO====");
 			System.out.print("입력 : ");
@@ -171,8 +172,55 @@ public class CustomerRun {
 					
 			}
 			break;
+			
+			
+			case 3:
+				//회원정보수정
 				
-			case 3 : 
+				System.out.println("  =====================KOSTACO====");
+				System.out.println(" ║             회원정보수정           ");
+				System.out.println("  =====================KOSTACO====");
+				System.out.println(" ║ 1. 고객 연락처 수정                ");
+				System.out.println(" ║ 2. 고객 주소 수정                  ");
+				System.out.println("  =====================KOSTACO====");
+				System.out.print(" 임력 =>");
+				int index3 = sc.nextInt();
+				
+				switch(index3) {
+				case 1:
+					//고객 번호를 받아 연락처 수정하기
+					int custId;
+					String custPhone;
+					
+					System.out.println("  =====================KOSTACO====");
+					System.out.println(" ║             회원연락처수정         ");
+					System.out.println("  =====================KOSTACO====");
+					System.out.print("회원번호를 입력 =>");
+					custId = sc.nextInt();
+					System.out.println("변경된 연락처를 입력 =>");
+					custPhone = sc.next();
+					customerDAO.updateCustPhone(custId, custPhone);
+					break;
+				case 2:
+					//고객 번호를 받아 주소 수정하기
+					int custId2;
+					String custAddr;
+					
+					System.out.println("  =====================KOSTACO====");
+					System.out.println(" ║             회원연락처수정         ");
+					System.out.println("  =====================KOSTACO====");
+					System.out.print("회원번호를 입력 =>");
+					custId2 = sc.nextInt();
+					System.out.println("변경된 주소 입력 =>");
+					custAddr = sc.next();
+					customerDAO.updateCustPhone(custId2, custAddr);
+					
+					break;
+				}
+				
+				break;
+				
+			case 4 : 
 				
 				//회원삭제
 				String custName;
