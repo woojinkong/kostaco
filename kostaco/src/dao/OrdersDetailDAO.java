@@ -14,7 +14,7 @@ import vo.OrdersDetailVO;
 import common.ConnectionProvider;
 
 public class OrdersDetailDAO {
-	
+
 	//새로운 orders_detail_id의 번호를 발행하여 반환하는 메소드
 	public int getNextNo() {
 		int no = -1;
@@ -107,113 +107,32 @@ public class OrdersDetailDAO {
 		}
 	}
 
-	public void printReceipt(int ordersId, String custName) {
-		 String sql = "SELECT o.orders_id, o.cust_id, c.cust_name, o.created, o.pay_type, o.card_no " +
-                 "FROM orders o " +
-                 "LEFT JOIN customer c ON o.cust_id = c.cust_id " +
-                 "WHERE o.orders_id = ?";
+	public List<OrdersDetailVO> receiptList(int ordersId){
+		List<OrdersDetailVO> list = new ArrayList<OrdersDetailVO>();
 		
-		try (
-			Connection conn = ConnectionProvider.getConnection();
-			PreparedStatement pstmt = conn.prepareStatement(sql)
-		) {
-			pstmt.setInt(1, ordersId);
-			ResultSet rs = pstmt.executeQuery();
-			
-			while (rs.next()) {
-				
-				printReceiptBody(
-					rs.getInt("cust_id"),
-					custName,
-					rs.getTimestamp("created").toLocalDateTime(),
-					rs.getString("pay_type"),
-					rs.getString("card_no"),
-					rs.getInt("orders_id")
-				);
-			}
-			ConnectionProvider.close(conn, pstmt, rs);
-		} catch (Exception e) {
-			System.out.println("예외발생: " + e.getMessage());
-		}
-	}
-	
-
-	// 영수증 출력 - 주문번호, 날짜 기준
-	public void printReceipt(String custName, String created) {
+		String sql = "SELECT orders_item, orders_qty, orders_promo, orders_price FROM orders_detail WHERE orders_id = ?";
 		
-		String sql = "SELECT o.orders_id, c.cust_id, c.cust_name, o.created, o.pay_type, o.card_no FROM orders o " +
-				     "JOIN customer c ON o.cust_id = c.cust_id WHERE c.cust_name = ? and to_char(created, 'yyyy/mm/dd') = ?";
-		try (
-			Connection conn = ConnectionProvider.getConnection();
-			PreparedStatement pstmt = conn.prepareStatement(sql)
-		) {
-			pstmt.setString(1, custName);
-			pstmt.setString(2, created);
-			ResultSet rs = pstmt.executeQuery();
-			
-			while (rs.next()) {
-				
-				printReceiptBody(
-					rs.getInt("cust_id"),
-					rs.getString("cust_name"),
-					rs.getTimestamp("created").toLocalDateTime(),
-					rs.getString("pay_type"),
-					rs.getString("card_no"),
-					rs.getInt("orders_id")
-				);
-			}
-			ConnectionProvider.close(conn, pstmt, rs);
-		} catch (Exception e) {
-			System.out.println("예외발생: " + e.getMessage());
-		}
-	}
-	
-	// 영수증 공통 출력 부분 메서드로 추출
-	private void printReceiptBody(int custId, String custName, LocalDateTime created, String payType, String cardNo, int ordersId) {
-		//현금이면 카드번호가 null이므로 카드번호에 0000으로 표시
-		if (cardNo == null || cardNo.trim().isEmpty() ||
-			    cardNo.equalsIgnoreCase("null") || cardNo.equals("0000")) {
-			    cardNo = "0000";
-			}
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		String formattedDate = created.format(formatter);
-	    System.out.println("╔════════════════════════════════════════╗");
-	    System.out.println("║            🛒 KOSTACO 영수증           ║");
-	    System.out.println("╠════════════════════════════════════════╣");
-	    System.out.printf("║ %-8s : %-25s║\n", "고객명", custName);
-	    System.out.printf("║ %-8s : %-25s║\n", "결제 날짜", formattedDate);
-	    System.out.printf("║ %-8s : %-25d║\n", "주문 번호", ordersId);
-	    System.out.printf("║ %-8s : %-25s║\n", "결제 수단", payType);
-	    System.out.printf("║ %-8s : %-25s║\n", "카드 번호", cardNo);
-	    System.out.println("╠════════════════════════════════════════╣");
-	    System.out.printf("║ %-10s %-6s %-8s %9s ║\n", "상품명", "수량", "프로모션", "합계");
-	    System.out.println("╠════════════════════════════════════════╣");
-		
-		String detailSql = "SELECT orders_item, orders_qty, orders_promo, orders_price FROM orders_detail WHERE orders_id = ?";;
 		try {
 			Connection conn = ConnectionProvider.getConnection();
-			PreparedStatement pstmt = conn.prepareStatement(detailSql);
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			
 			pstmt.setInt(1, ordersId);
 			ResultSet rs = pstmt.executeQuery();
-			int total = 0;
-			int count = 0;
-			while (rs.next()) {//주문한 상품의 정보
-				String orderItem = rs.getString("orders_item"); //orders_detail에 저장된 상품명
-				int price = rs.getInt("orders_price");////orders_detail에 저장된 상품 가격
-				int qty = rs.getInt("orders_qty");//주문한 상품의 수량
-				String promo = rs.getString("orders_promo");
-				total += rs.getInt("orders_price");
-				count += rs.getInt("orders_qty");
-				System.out.printf("║ %-7s %-6d %-3s %,9d원 ║\n", orderItem, qty, promo, price);
+			
+			while(rs.next()) {
+				
+				OrdersDetailVO odVO = new OrdersDetailVO();
+				odVO.setOrdersItem(rs.getString("orders_item"));
+				odVO.setOrderQty(rs.getInt("orders_qty"));
+				odVO.setOrdersPromo(rs.getString("orders_promo"));
+				odVO.setOrdersPrice(rs.getInt("orders_price"));
+				list.add(odVO);
 			}
-			
-	        System.out.println("╠════════════════════════════════════════╣");
-	        System.out.printf("║ %-10s : %4d개 / %,9d원 ║\n", "합계/금액", count, total);
-	        System.out.println("╚════════════════════════════════════════╝");
-			
 			ConnectionProvider.close(conn, pstmt, rs);
 		} catch (Exception e) {
-			System.out.println("상세 예외발생: " + e.getMessage());
+			System.out.println("예외발생:" + e.getMessage());
 		}
+		return list;
 	}
+
 }

@@ -1,11 +1,13 @@
 package dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import vo.OrdersVO;
@@ -33,6 +35,31 @@ public class OrdersDAO {
 		}
 		return no;
 	}
+	
+	//주문 날짜 형식 변경하여 반환
+	public String getCreated(int ordersId) {
+		LocalDateTime created =null;
+		String orderCreated = "";
+		String sql = "SELECT created AS created FROM orders WHERE orders_id = ?";
+		
+		try {
+			Connection conn = ConnectionProvider.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, ordersId);
+			ResultSet rs = pstmt.executeQuery();
+			if(rs.next()) {
+				created = rs.getTimestamp("created").toLocalDateTime();
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+				orderCreated = created.format(formatter);
+				
+			}
+			ConnectionProvider.close(conn, pstmt, rs);
+		} catch (Exception e) {
+			System.out.println("예외발생: " + e.getMessage());
+		}
+				
+		return orderCreated;
+	}
 	public int getOrdersId() {
 		String sql = "SELECT MAX(orders_id) FROM orders";
 		int re = -1;
@@ -50,6 +77,7 @@ public class OrdersDAO {
 		}
 		return re;
 	}
+
 	// 주문 등록
 	public int insertOrders (int custId, String cardNo, String payType) {
 		String sql = "insert into orders (orders_id, created, cust_id, card_no, pay_type) values(?,?,?,?,?)";
@@ -63,7 +91,6 @@ public class OrdersDAO {
 			pstmt.setTimestamp(2, sqlnowDate);
 		
 			pstmt.setInt(3, custId);
-			
 			pstmt.setString(4, cardNo); 
 			pstmt.setString(5, payType);
 			
@@ -75,8 +102,6 @@ public class OrdersDAO {
 			System.out.println("예외발생:주문등록"+e.getMessage());
 			return 0;
 		}
-		
-		
 	}
 	
 	// 주문 삭제
@@ -128,8 +153,6 @@ public class OrdersDAO {
 		} catch (Exception e) {
 			System.out.println("예외발생:주문전체 "+e.getMessage());
 		}
-		
-		
 		return ordersList; 
 	}
 	
@@ -159,6 +182,58 @@ public class OrdersDAO {
 			System.out.println("예외발생:주문고객id"+e.getMessage());
 		}
 		return ordersList;
-		
 	}
+	
+	// 주문 고객아이디로 검색
+	public List<OrdersVO> findOrdersByCustIdAndCreated (int cust_id, String created) {
+		List<OrdersVO> ordersList = new ArrayList<>();
+		String sql = "select orders_id, created, cust_id, card_no, pay_type from orders where cust_id = ? and to_char(created, 'yyyy/mm/dd') = ?";
+		
+		try (Connection conn = ConnectionProvider.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql)){
+					
+			pstmt.setInt(1, cust_id);
+			pstmt.setString(2, created);
+			try (ResultSet rs = pstmt.executeQuery()){
+				while (rs.next()) {
+					int orders_id = rs.getInt("orders_id");
+					LocalDateTime orderCreated = rs.getTimestamp("created").toLocalDateTime();
+					String card_no = rs.getString("card_no");
+					String pay_type	= rs.getString("pay_type");
+					
+					OrdersVO orders = new OrdersVO(orders_id, orderCreated, cust_id, card_no, pay_type);
+					ordersList.add(orders);
+				}
+			}
+			
+		} catch (SQLException e) {
+			System.out.println("예외발생:주문고객id"+e.getMessage());
+		}
+		return ordersList;
+	}
+	
+	// OrdersDAO.java
+	public OrdersVO findOrderById(int ordersId) {
+	    OrdersVO vo = new OrdersVO();
+	    String sql = "SELECT orders_id, cust_id, pay_type, card_no, created FROM orders WHERE orders_id = ?";
+	    try (
+	        Connection conn = ConnectionProvider.getConnection();
+	        PreparedStatement pstmt = conn.prepareStatement(sql)
+	    ) {
+	        pstmt.setInt(1, ordersId);
+	        ResultSet rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	            vo.setOrdersId(rs.getInt("orders_id"));
+	            vo.setCustId(rs.getInt("cust_id"));
+	            vo.setPayType(rs.getString("pay_type"));
+	            vo.setCardNo(rs.getString("card_no"));
+	            vo.setCreated(rs.getTimestamp("created").toLocalDateTime());
+	        }
+	        rs.close();
+	    } catch (Exception e) {
+	        System.out.println("주문 정보 조회 오류: " + e.getMessage());
+	    }
+	    return vo;
+	}
+
 }

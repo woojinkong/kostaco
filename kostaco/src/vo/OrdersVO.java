@@ -1,5 +1,5 @@
 package vo;
-import java.sql.Date;
+
 import java.time.LocalDateTime;
 
 public class OrdersVO {
@@ -23,11 +23,11 @@ public class OrdersVO {
 		// TODO Auto-generated constructor stub
 	}
 
-	public int getOrders_id() {
+	public int getOrdersId() {
 		return orders_id;
 	}
 
-	public void setOrder_id(int orders_id) {
+	public void setOrdersId(int orders_id) {
 		this.orders_id = orders_id;
 	}
 
@@ -39,30 +39,27 @@ public class OrdersVO {
 		this.created = created;
 	}
 
-	public Integer getCust_id() {
+	public Integer getCustId() {
 		return cust_id;
 	}
 
-	public void setCust_id(Integer cust_id) {
+	public void setCustId(Integer cust_id) {
 		this.cust_id = cust_id;
 	}
 
-	public String getPay_type() {
+	public String getPayType() {
 		return pay_type;
 	}
 
-	public void setPay_type(String pay_type) {
+	public void setPayType(String pay_type) {
 		this.pay_type = pay_type;
 	}
 
-	public String getCard_no() {
+	public String getCardNo() {
 		return card_no;
 	}
 
-	public void setCard_no(String card_no) {
+	public void setCardNo(String card_no) {
 		this.card_no = card_no;
 	}
-	
-	
-
 }
