@@ -16,10 +16,10 @@ public class CustomerRun {
 		ArrayList<CustomerVO> custlist;
 		while(true) {
 			System.out.println("  =====================KOSTACO====");
-			System.out.println(" ║ 1. 회원 등록                     ║");
-			System.out.println(" ║ 2. 회원 조회                     ║");
-			System.out.println(" ║ 3. 회원 삭제                     ║");
-			System.out.println(" ║ 0. 종료                         ║");
+			System.out.println(" ║ 1. 회원 등록                     ");
+			System.out.println(" ║ 2. 회원 조회                     ");
+			System.out.println(" ║ 3. 회원 삭제                     ");
+			System.out.println(" ║ 0. 종료                         ");
 			System.out.println("  =====================KOSTACO====");
 			System.out.print("입력 : ");
 			menu = sc.nextInt();
@@ -28,6 +28,9 @@ public class CustomerRun {
 			switch(menu) {
 			case 1 : 
 				//회원 등록
+				System.out.println("  =====================KOSTACO====");
+				System.out.println(" ║             고객등록              ");
+				System.out.println("  =====================KOSTACO====");
 				System.out.print("회원 이름 : ");
 				cname = sc.nextLine();
 				System.out.print("생년월일 : [입력예시 : 2000/00/00]");
@@ -45,6 +48,9 @@ public class CustomerRun {
 			case 2 : 
 				//회원 조회
 				int index;
+				System.out.println("  =====================KOSTACO====");
+				System.out.println(" ║             회원 조회            ");
+				System.out.println("  =====================KOSTACO====");
 				System.out.println("1. 이름과 핸드폰 뒷자리(4개)로 조회");
 				System.out.println("2. 전체회원 조회");
 				System.out.println("3. 특정날자, N번째 고객 조회");
@@ -74,8 +80,9 @@ public class CustomerRun {
 					break;
 				case 2:
 					//전체회원 조회
-					
-					System.out.println("전체 회원 리스트");
+					System.out.println("  =====================KOSTACO====");
+					System.out.println(" ║             전체고객조회           ");
+					System.out.println("  =====================KOSTACO====");
 					custlist = customerDAO.findAllCust();
 					for(CustomerVO vo : custlist) {
 						System.out.println("고객번호 : " + vo.getCustId() + 
@@ -90,6 +97,9 @@ public class CustomerRun {
 					String date;
 					int N;
 					int custId;
+					System.out.println("  =====================KOSTACO====");
+					System.out.println(" ║             회원 조회            ");
+					System.out.println("  =====================KOSTACO====");
 					System.out.print("조회할 날자를 입력 =>");
 					date = sc.next();
 					System.out.print("몇번째 주문한 고객을 조회 하시겠습니까 =>");
@@ -114,6 +124,9 @@ public class CustomerRun {
 					int count;
 					int index3 = 1;
 					
+					System.out.println("  =====================KOSTACO====");
+					System.out.println(" ║             매출VIP고객조회        ");
+					System.out.println("  =====================KOSTACO====");
 					System.out.println("특정기간동안 구매금액이 많은 VIP고객을 조회합니다.");
 					System.out.println("===============================");
 					System.out.print("시작날자를 입력해주세요[예:2024/12/05] =>");
@@ -139,6 +152,9 @@ public class CustomerRun {
 					String itemName;
 					int custCount;
 					int index2 = 1;
+					System.out.println("  =====================KOSTACO====");
+					System.out.println(" ║             상품별VIP고객조회       ");
+					System.out.println("  =====================KOSTACO====");
 					System.out.println("특정상품을 가장 많이 구입한 고객리스트를 불러옵니다.");
 					System.out.println("===============================");
 					System.out.print("특정 상품의 상품이름을 입력 =>[예 : 빼빼로]");
@@ -161,6 +177,9 @@ public class CustomerRun {
 				//회원삭제
 				String custName;
 				String custPhone;
+				System.out.println("  =====================KOSTACO====");
+				System.out.println(" ║             회원삭제             ");
+				System.out.println("  =====================KOSTACO====");
 				System.out.print("삭제할 회원의 이름 => ");
 				custName = sc.next();
 				System.out.println("회원 핸드폰 뒷자리 4개 =>");
