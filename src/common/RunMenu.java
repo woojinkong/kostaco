@@ -301,7 +301,7 @@ public class RunMenu {
 		        			orderQty = sc.nextInt();
 		        			sc.nextLine();
 
-		        			ordersDetailDAO.insertReceipt(ordersId, itemId, orderQty);
+		        			//ordersDetailDAO.insertReceipt(ordersId, itemId, orderQty);
 		        			ItemVO item = itemDAO.findById(itemId); // 상품 정보 가져오기
 
 		        			int displayQty = orderQty;
