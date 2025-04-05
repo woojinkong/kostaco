@@ -56,52 +56,25 @@ public class OrdersDetailDAO {
 		return re;
 	}
 	//구매할 상품 담기
-	public void insertReceipt(int ordersId, int itemId, int ordersQty) {
-		String subsql = "SELECT (SELECT cust_id FROM orders WHERE orders_id = ?) AS cust_id, item_name, item_promo, item_price FROM item WHERE item_id = ?";
-
+	public void insertReceipt(int ordersId, int itemId, String ordersName, int ordersQty, String ordersPromo, int ordersPrice) {
+		String sql = "INSERT INTO orders_detail(orders_detail_id, orders_id, item_id, orders_item, orders_qty, orders_promo, orders_price) "
+				+ "VALUES(?,?,?,?,?,?,?)";
 		try {
-			Connection subconn = ConnectionProvider.getConnection();
-			PreparedStatement subpstmt = subconn.prepareStatement(subsql);
-			
-			subpstmt.setInt(1, ordersId);
-			subpstmt.setInt(2, itemId);
-			
-			ResultSet rs = subpstmt.executeQuery();
-			String orderName = "";
-			String promo = " - ";
-			int custId = 0;
-			int ordersPrice = 0;
-			
-			if(rs.next()) {
-				custId = rs.getInt("cust_id");
-				orderName = rs.getString("item_name");
 
-				if(custId > 0 ) ordersPrice = (int) ((ordersQty * rs.getInt("item_price")) * (0.9));
-				else ordersPrice = ordersQty * rs.getInt("item_price");
-				
-				if("1+1".equals(rs.getString("item_promo"))){ 
-					ordersQty *= 2;
-					promo = "1+1";
-				}
-			}
-			ConnectionProvider.close(subconn, subpstmt);
-		
-			String mainsql = "INSERT INTO orders_detail(orders_detail_id, orders_id, item_id, orders_item, orders_qty, orders_promo, orders_price) "
-					+ "VALUES(?,?,?,?,?,?,?)";
 			
-			Connection mainconn = ConnectionProvider.getConnection();
-			PreparedStatement mainpstmt = mainconn.prepareStatement(mainsql);
+			Connection conn = ConnectionProvider.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);
 			
-			mainpstmt.setInt(1, getNextNo());
-			mainpstmt.setInt(2, ordersId);
-			mainpstmt.setInt(3, itemId);
-			mainpstmt.setString(4, orderName);
-			mainpstmt.setInt(5, ordersQty);
-			mainpstmt.setString(6, promo);
-			mainpstmt.setInt(7, ordersPrice);
-			mainpstmt.executeUpdate();
+			pstmt.setInt(1, getNextNo());
+			pstmt.setInt(2, ordersId);
+			pstmt.setInt(3, itemId);
+			pstmt.setString(4, ordersName);
+			pstmt.setInt(5, ordersQty);
+			pstmt.setString(6, ordersPromo);
+			pstmt.setInt(7, ordersPrice);
+			pstmt.executeUpdate();
 			
-			ConnectionProvider.close(mainconn, mainpstmt);
+			ConnectionProvider.close(conn, pstmt);
 		} catch (Exception e) {
 			System.out.println("예외발생:" + e.getMessage());
 		}
@@ -134,5 +107,4 @@ public class OrdersDetailDAO {
 		}
 		return list;
 	}
-
 }

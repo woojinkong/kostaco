@@ -38,7 +38,9 @@ public class OrdersRun {
 				int custId, itemId;
 				String custName, custPhone;
 				String payType, cardNo;
-				int ordersId, orderQty, itemQty, selectedItemQty ;
+				String itemName; 
+				String promo;
+				int ordersId, ordersQty, itemQty, selectedItemQty, ordersPrice;
 				total = 0;
 				count = 0;
 				System.out.print("고객명을 입력하세요.[비회원이면 비회원 입력]==> ");
@@ -93,24 +95,31 @@ public class OrdersRun {
 					
 					if (itemId == 0) break;
 					
-					 if (itemId >= itemDAO.getNextNo()) {
+					if (itemId >= itemDAO.getNextNo()) {
 					        System.out.println("❗ 존재하지 않는 상품입니다. 다시 선택해주세요.");
 					        continue;
 					}//존재 상품 여부 확인 종료
+					ItemVO item = itemDAO.findById(itemId);
+					itemName = item.getItemName();
 					System.out.print("구매할 수량을 입력해주세요.==> ");
-					orderQty = sc.nextInt();
+					ordersQty = sc.nextInt();
 					sc.nextLine();
 						
-					itemQty = itemDAO.findById(itemId).getItemQty();
-					selectedItemQty = orderQty;
-					if("1+1".equals(itemDAO.findById(itemId).getItemPromo())){ 
+					itemQty = item.getItemQty();
+					selectedItemQty = ordersQty;
+					promo = " - ";
+					if("1+1".equals(item.getItemPromo())){
+						promo = "1+1";
 						selectedItemQty *= 2;
 					}
 					if(selectedItemQty > itemQty){
 						System.out.println("재고가 부족합니다. 현재 구매 가능 개수 : " + itemQty);
 						continue;
-					}//재고 수량 확인 if문 종료 
-					ordersDetailDAO.insertReceipt(ordersId, itemId, orderQty);
+					}//재고 수량 확인 if문 종료
+					ordersPrice = ordersQty * item.getItemPrice();
+					//if(custId > 0 ) ordersPrice = (int) (ordersPrice * (0.9));
+					
+					ordersDetailDAO.insertReceipt(ordersId, itemId, itemName, selectedItemQty, promo, ordersPrice);
 					itemDAO.updateItem(itemId, ordersDetailDAO.findByOrdersIdAndItemId(ordersId, itemId));
 					isOrdersItem = true; // 주문이 하나라도 담겼으면 true
 				}//while 종료
@@ -126,11 +135,11 @@ public class OrdersRun {
     		    System.out.println("╔════════════════════════════════════════╗");
     		    System.out.println("            🛒 KOSTACO 영수증              ");
     		    System.out.println("╠════════════════════════════════════════╣");
-    		    System.out.printf("║ %-8s : %-25s\n", "고객명", custName);
-    		    System.out.printf("║ %-8s : %-25s\n", "결제 날짜", ordersDAO.getCreated(ordersId));
-    		    System.out.printf("║ %-8s : %-25d\n", "주문 번호", ordersId);
-    		    System.out.printf("║ %-8s : %-25s\n", "결제 수단", payType);
-    		    System.out.printf("║ %-8s : %-25s\n", "카드 번호", cardNo);
+    		    System.out.printf(" %-8s : %-25s\n", "고객명", custName);
+    		    System.out.printf(" %-8s : %-25s\n", "결제 날짜", ordersDAO.getCreated(ordersId));
+    		    System.out.printf(" %-8s : %-25d\n", "주문 번호", ordersId);
+    		    System.out.printf(" %-8s : %-25s\n", "결제 수단", payType);
+    		    System.out.printf(" %-8s : %-25s\n", "카드 번호", cardNo);
     		    System.out.println("╠════════════════════════════════════════╣");
     		    System.out.printf("  %-10s %-6s   %-8s %-6s \n", "상품명", "수량", "프로모션", "금액");
     		    System.out.println("╠════════════════════════════════════════╣");
@@ -143,7 +152,9 @@ public class OrdersRun {
 					total += odvo.getOrdersPrice(); //상품에 맴버십 처리된 가격 합
 					count += odvo.getOrdersQty(); //상품에 프로모션 처리된 수량의 합
 				}
-				
+				if(custId > 0) {
+					total *= 0.9;
+				}
 		        System.out.println("╠════════════════════════════════════════╣");
 		        System.out.printf("  %-10s : %6d개 / %,6d원 \n", "합계/금액", count, total);
 				System.out.println("╠════════════════════════════KOSTACO═════╣");
@@ -179,11 +190,11 @@ public class OrdersRun {
 			    		    System.out.println("╔════════════════════════════════════════╗");
 			    		    System.out.println("            🛒 KOSTACO 영수증              ");
 			    		    System.out.println("╠════════════════════════════════════════╣");
-			    		    System.out.printf("%-8s : %-25s\n", "고객명", deleteCustName);
-			    		    System.out.printf("%-8s : %-25s\n", "결제 날짜", ordersDAO.getCreated(order.getOrdersId()));
-			    		    System.out.printf("%-8s : %-25d\n", "주문 번호", order.getOrdersId());
-			    		    System.out.printf("%-8s : %-25s\n", "결제 수단", order.getPayType());
-			    		    System.out.printf("%-8s : %-25s\n", "카드 번호", order.getCardNo());
+			    		    System.out.printf(" %-8s : %-25s\n", "고객명", deleteCustName);
+			    		    System.out.printf(" %-8s : %-25s\n", "결제 날짜", ordersDAO.getCreated(order.getOrdersId()));
+			    		    System.out.printf(" %-8s : %-25d\n", "주문 번호", order.getOrdersId());
+			    		    System.out.printf(" %-8s : %-25s\n", "결제 수단", order.getPayType());
+			    		    System.out.printf(" %-8s : %-25s\n", "카드 번호", order.getCardNo());
 			    		    System.out.println("╠════════════════════════════════════════╣");
 			    		    System.out.printf("  %-10s %-6s   %-8s %-6s \n", "상품명", "수량", "프로모션", "금액");
 			    		    System.out.println("╠════════════════════════════════════════╣");
