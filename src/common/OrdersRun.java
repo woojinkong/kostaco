@@ -21,11 +21,15 @@ public class OrdersRun {
 		int total, count;
 		
 		while (true) {
-			System.out.println("=====주문 관리 시스템=====");
+		    System.out.println("╔═════════════════════════════════╗");
+		    System.out.println("        🛒 KOSTACO 주문관리     ");
+		    System.out.println("╠═════════════════════════════════╣");
 			System.out.println("1. 주문 등록");
 			System.out.println("2. 주문 삭제");
 			System.out.println("3. 주문 조회");
 			System.out.println("0. 종료");
+            System.out.println("╠══════════════════════KOSTACO════╣");
+
 			System.out.print("선택: ");
 
 			int choice = sc.nextInt();

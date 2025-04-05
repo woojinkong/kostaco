@@ -15,17 +15,18 @@ public class ItemRun {
     public void itemRun(Scanner scanner) {
         Scanner sc = new Scanner(System.in);
         while (true) {
-            System.out.println(" ================================");
-            System.out.println("║    🛒 KOSTACO 매장관리시스템 🛒    ");
-            System.out.println(" ================================");
-            System.out.println("  ================================");
-            System.out.println(" ║ 1. 상품 등록                    ");
-            System.out.println(" ║ 2. 상품 조회                    ");
-            System.out.println(" ║ 3. 상품 전체 조회                ");
-            System.out.println(" ║ 4. 상품 수정                    ");
-            System.out.println(" ║ 5. 상품 삭제                    ");
-            System.out.println(" ║ 0. 종료                        ");
-            System.out.println("  =====================KOSTACO====");
+        	
+		    System.out.println("╔═════════════════════════════════╗");
+		    System.out.println("        🛒 KOSTACO 상품관리      ");
+		    System.out.println("╠═════════════════════════════════╣");
+            System.out.println(" 1. 상품 등록                    ");
+            System.out.println(" 2. 상품 조회                    ");
+            System.out.println(" 3. 상품 전체 조회                ");
+            System.out.println(" 4. 상품 수정                    ");
+            System.out.println(" 5. 상품 삭제                    ");
+            System.out.println(" 0. 종료                        ");
+            System.out.println("╠══════════════════════KOSTACO════╣");
+
 
             System.out.print("입력 : ");
             int choice = sc.nextInt();
