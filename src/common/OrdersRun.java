@@ -1,6 +1,7 @@
 package common;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -27,6 +28,8 @@ public class OrdersRun {
 			System.out.println("1. 주문 등록");
 			System.out.println("2. 주문 삭제");
 			System.out.println("3. 주문 조회");
+			System.out.println("4. 구매하지 않은 인기 상품");
+			System.out.println("5. 구매하지 않은 추천 상품");
 			System.out.println("0. 종료");
             System.out.println("╠══════════════════════KOSTACO════╣");
 
@@ -90,7 +93,7 @@ public class OrdersRun {
 
 					for (ItemVO item : itemlist) {
 						System.out.printf("%d.   %-7s %-4d     %-7s %,d원 \n", item.getItemId(), item.getItemName(),
-								item.getItemQty(), item.getItemPromo(), item.getItemPrice());
+								item.getItemQty(), ("1+1".equals(item.getItemPromo()) ? "1+1" : " - "), item.getItemPrice());
 					}//상품 목록 출력 for문 종료
 					System.out.println("╠════════════════════════════KOSTACO═════╣");
 					
@@ -281,7 +284,77 @@ public class OrdersRun {
 					}else {
 						System.out.println("해당 고객은 존재하지 않습니다.");
 				}
+			case 4 :
+				String popularCustName, popularCustPhone; 
+				int popularCustId;
+				
+				System.out.print("검색할 고객 이름 입력: ");
+				popularCustName = sc.next();
 
+				System.out.print("회원 핸드폰 뒷자리 4개: ");
+				popularCustPhone = sc.next();
+				
+				popularCustId = customerDAO.findCustByNameAndPhone(popularCustName, popularCustPhone);
+				
+				List<Integer> popularItemId = new ArrayList<Integer>();
+				List<ItemVO> popularItemList = new ArrayList<ItemVO>();
+				
+				if (popularCustId == -1) {
+				    System.out.println("해당 고객 정보를 찾을 수 없습니다.");
+				    break;
+				}
+
+				
+				popularItemId = ordersDetailDAO.getPopularItem(popularCustId);
+				
+				for(int no : popularItemId) {
+					popularItemList.add(itemDAO.findById(no));
+				}
+				System.out.println("╔════════════════════════════════════════╗");
+	    		System.out.println("           🛒 KOSTACO 인기 상품 목록         ");
+	    		System.out.println("╠════════════════════════════════════════╣");
+	    		System.out.printf("%s   %-7s %-4s  %-7s %-6s \n", "번호", "이름", "수량", "프로모션", "금액");
+				for(ItemVO item : popularItemList) {
+					System.out.printf("%d.   %-7s %-4d     %-7s %,d원 \n", item.getItemId(), item.getItemName(),
+							item.getItemQty(), ("1+1".equals(item.getItemPromo()) ? "1+1" : " - "), item.getItemPrice());
+				}
+				System.out.println("╠════════════════════════════KOSTACO═════╣");
+				break;
+			case 5 :
+				String recommendCustName, recommendCustPhone; 
+				int recommendCustId;
+				
+				System.out.print("검색할 고객 이름 입력: ");
+				recommendCustName = sc.next();
+
+				System.out.print("회원 핸드폰 뒷자리 4개: ");
+				recommendCustPhone = sc.next();
+				
+				recommendCustId = customerDAO.findCustByNameAndPhone(recommendCustName, recommendCustPhone);
+				
+				List<Integer> recommendItemId = new ArrayList<Integer>();
+				List<ItemVO> recommendItemList = new ArrayList<ItemVO>();
+				
+				if (recommendCustId == -1) {
+				    System.out.println("해당 고객 정보를 찾을 수 없습니다.");
+				    break;
+				}
+
+				
+				recommendItemId = ordersDetailDAO.getRecommendItem(recommendCustId);
+				
+				for(int no : recommendItemId) {
+					recommendItemList.add(itemDAO.findById(no));
+				}
+				System.out.println("╔════════════════════════════════════════╗");
+	    		System.out.println("           🛒 KOSTACO 추천 상품 목록         ");
+	    		System.out.println("╠════════════════════════════════════════╣");
+	    		System.out.printf("%s   %-7s %-4s  %-7s %-6s \n", "번호", "이름", "수량", "프로모션", "금액");
+				for(ItemVO item : recommendItemList) {
+					System.out.printf("%d.   %-7s %-4d     %-7s %,d원 \n", item.getItemId(), item.getItemName(),
+							item.getItemQty(), ("1+1".equals(item.getItemPromo()) ? "1+1" : " - "), item.getItemPrice());
+				}
+				System.out.println("╠════════════════════════════KOSTACO═════╣");
 				break;
 			case 0:
 				System.out.println("프로그램을 종료합니다.");

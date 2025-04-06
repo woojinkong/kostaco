@@ -49,7 +49,7 @@ public class OrdersDetailDAO {
 			ResultSet rs = pstmt.executeQuery();
 			
 			if(rs.next()) re = rs.getInt("orders_qty");  
-			
+			ConnectionProvider.close(conn, pstmt, rs);
 		} catch (Exception e) {
 			System.out.println("예외발생:" + e.getMessage());
 		}
@@ -104,6 +104,103 @@ public class OrdersDetailDAO {
 			ConnectionProvider.close(conn, pstmt, rs);
 		} catch (Exception e) {
 			System.out.println("예외발생:" + e.getMessage());
+		}
+		return list;
+	}
+	
+	//구매하지 않은 상품 중에 인기있는 상품 TOP5
+	public List<Integer> getPopularItem(int custId) {
+		List<Integer> list = new ArrayList<Integer>();
+		String sql = ""
+			    + "SELECT item_id "
+			    + "FROM ( "
+			    + "    SELECT item_id, SUM(orders_qty) AS total_qty "
+			    + "    FROM orders_detail "
+			    + "    WHERE item_id IN ( "
+			    + "        SELECT item_id "
+			    + "        FROM item "
+			    + "        WHERE item_id NOT IN ( "
+			    + "            SELECT item_id "
+			    + "            FROM orders_detail "
+			    + "            WHERE orders_id IN ( "
+			    + "                SELECT orders_id "
+			    + "                FROM orders "
+			    + "                WHERE cust_id = ? "
+			    + "            ) "
+			    + "        ) "
+			    + "    ) "
+			    + "    GROUP BY item_id, orders_item "
+			    + "    ORDER BY total_qty DESC "
+			    + ") "
+			    + "WHERE ROWNUM <= 5";
+		try {
+			Connection conn = ConnectionProvider.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, custId);
+			
+			ResultSet rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				list.add(rs.getInt("item_id"));
+			}
+			ConnectionProvider.close(conn, pstmt, rs);
+		} catch (Exception e) {
+			System.out.println("예외발생: " + e.getMessage());
+		}
+		return list;
+	}
+	//고객 번호를 받아 해당 고객이 가장 많이 구매한 물품을 찾고 해당 물품을 구매한 다른 고객들이 같이 구매한 다른 상품을 추천하며 이미 구매한 상품은 추천하지 않는다.
+	public List<Integer> getRecommendItem(int custId){
+		List<Integer> list = new ArrayList<Integer>();
+		
+		String sql = "SELECT distinct od1.item_id "
+		        	+ "FROM orders o1 "
+		        	+ "JOIN orders_detail od1 ON o1.orders_id = od1.orders_id "
+			        + "JOIN item i ON od1.item_id = i.item_id "
+			        + "WHERE o1.cust_id IN ( "
+			        + "    SELECT o2.cust_id "
+			        + "    FROM orders o2 "
+			        + "    JOIN orders_detail od2 ON o2.orders_id = od2.orders_id "
+			        + "    WHERE od2.item_id = ( "
+			        + "        SELECT item_id "
+			        + "        FROM ( "
+			        + "            SELECT item_id "
+			        + "            FROM orders_detail "
+			        + "            WHERE orders_id IN ( "
+			        + "                SELECT orders_id FROM orders WHERE cust_id = ? "
+			        + "            ) "
+			        + "            GROUP BY item_id "
+			        + "            ORDER BY SUM(orders_qty) DESC "
+			        + "        ) "
+			        + "        WHERE ROWNUM = 1 "
+			        + "    ) "
+			        + "    AND o2.cust_id != ? "
+			        + ") "
+			        + "AND od1.item_id NOT IN ( "
+			        + "    SELECT item_id "
+			        + "    FROM orders_detail "
+			        + "    WHERE orders_id IN ( "
+			        + "        SELECT orders_id FROM orders WHERE cust_id = ? "
+			        + "    ) "
+			        + ")"
+			        + "ORDER BY item_id";
+		try {
+			Connection conn = ConnectionProvider.getConnection();
+			
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, custId);
+			pstmt.setInt(2, custId);
+			pstmt.setInt(3, custId);
+		
+			ResultSet rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				list.add(rs.getInt("item_id"));
+			}
+			ConnectionProvider.close(conn, pstmt, rs);
+		} catch (Exception e) {
+			System.out.println("예외발생: " + e.getMessage());
 		}
 		return list;
 	}
