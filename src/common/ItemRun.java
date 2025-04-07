@@ -118,10 +118,10 @@ public class ItemRun {
 
                 case 4:
                     System.out.println("제품을 입력해주세요.");
-                    String name = sc.nextLine();
+                    int itemId = sc.nextInt();
                     System.out.println("수량을 입력해주세요.");
                     int qty = sc.nextInt();
-                    itemDAO.updateItem(name, qty);
+                    itemDAO.updateItem1(itemId, qty);
 
                     break;
 

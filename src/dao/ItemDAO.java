@@ -202,14 +202,14 @@ public class ItemDAO {
 		}
     }
 
-    public void updateItem(String item_name, int itemQty) {
-        String sql = "update item set item_qty = ? where item_name = ?";
+    public void updateItem1(int item_id, int itemQty) {
+        String sql = "update item set item_qty = ? where item_id = ?";
         try {
             Connection conn = ConnectionProvider.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql);
 
             pstmt.setInt(1, itemQty);
-            pstmt.setString(2, item_name);
+            pstmt.setInt(2, item_id);
             int i = pstmt.executeUpdate();
             if (i > 0) {
 
@@ -223,8 +223,6 @@ public class ItemDAO {
             System.out.println("예외 발생: " + e.getMessage());
 
         }
-
-
     }
 
 
