@@ -11,9 +11,10 @@ public class CustomerDAO {
     //고객 이름과 핸드폰 뒷자리번호 4개로 고객번호 찾기 예(이름 공우진, 번호 5948)
     public int findCustByNameAndPhone(String custName, String custPhone) {
         int custId = -1;
-        //고객이름과 고객 핸드폰번호 끝에서부터 4자리의 숫자를 비쇼하여 고객 아이디를 반환합니다.
+        //고객이름과 고객 핸드폰번호 끝에서부터 4자리의 숫자를 비교하여 고객 아이디를 반환합니다.
         String sql = "select cust_id from customer where cust_name = ? "
                 + "and substr(cust_phone, length(cust_phone) - 3, 4) = ?";
+        
         Connection conn =  ConnectionProvider.getConnection();
         try {
             PreparedStatement prst = conn.prepareStatement(sql);
@@ -37,7 +38,7 @@ public class CustomerDAO {
     //특정 날자에 N번째 손님의 고객번호를 찾는 메소드
     public int findCustIdByDateAndN(String date, int N) {
         int custId = 0;
-
+        //서브쿼리를 이용하여 특정날자에 N번째 주문한 고객 번호를 반환하는 쿼리
         String sql = "select r, cust_id "
                 + "from (select rownum r, cust_id "
                 + "from orders "
@@ -65,7 +66,7 @@ public class CustomerDAO {
     //고객번호로 회원정보 가져오기
     public CustomerVO getCustByCustid(int custId) {
         CustomerVO custVo = null;
-
+        //고객아이디를 참조하여 고객정보를 다 가져오는 쿼리
         String sql = "select * from customer where cust_id = ?";
         Connection conn =  ConnectionProvider.getConnection();
         try {
@@ -91,6 +92,7 @@ public class CustomerDAO {
     //전체 고객 조회 후 리스트에 담는 메소드
     public ArrayList<CustomerVO> findAllCust(){
         ArrayList<CustomerVO> list = new ArrayList<CustomerVO>();
+        //고객정보 전부를 가져오는 쿼리
         String sql = "select * from customer";
         Connection conn = ConnectionProvider.getConnection();
         try {
@@ -120,6 +122,7 @@ public class CustomerDAO {
                               String cust_birth, String cust_addr, String cust_phone ) {
         int re = -1;
         int index = getCustomerLastIndex();
+        //고객정보를 등록하는 쿼리
         String sql = "insert into customer values(?,?,?,?,?)";
         try {
             Connection conn = ConnectionProvider.getConnection();
@@ -142,6 +145,7 @@ public class CustomerDAO {
     //고객번호로 회원삭제
     public int deleteCustomer(int cust_id) {
         int re = -1;
+        //고객아이디를 참조하여 해당 고객을 삭제하는 쿼리.
         String sql = "delete from customer where cust_id = ?";
         try {
             Connection conn = ConnectionProvider.getConnection();
@@ -175,13 +179,11 @@ public class CustomerDAO {
     
     
     //특정기간동안 구매금액이 가장 큰 고객 리스트를 원하는 수만큼 가져오는 메소드
-    //date1~ date2 기간사이 구매금액이 가장 큰 고객을 count만큼 구하는 메소드
-    //예 : 2024/05/12 부터 2025/12/12 까지 매출순으로 고객 5명을 가져온다.
-    //가져오는 정보 = 고객번호, 고객매출
-    
     public ArrayList<CustomerVO> findVipCustomer(String date1, String date2, int custcount) {
     	ArrayList<CustomerVO> list = new ArrayList<CustomerVO>();
-    	
+    	 //date1~ date2 기간사이 구매금액이 가장 큰 고객을 count만큼 구하는 메소드
+        //예 : 2024/05/12 부터 2025/12/12 까지 매출순으로 고객 5명을 가져온다.
+        //가져오는 정보 = 고객번호, 고객매출
     	String sql = "select * "
     			+ "from (select c.cust_id, sum(orders_price) Sum "
     			+ "from orders_detail od , orders o, customer c "
@@ -218,7 +220,6 @@ public class CustomerDAO {
     //고객 취향 분석을 위하여
     //특정 상품을 가장 많이 구입한 고객순을 N번째(count)고객까지 조회하는 메소드
     //고객번호 cust_id 를 반환하여 리스트로 넣는다.
-    
     public ArrayList<CustomerVO> findCustByItem(String itemName, int count){
     	ArrayList<CustomerVO> list = new ArrayList<CustomerVO>();
     	String sql = "select cust_id, total "
@@ -252,7 +253,7 @@ public class CustomerDAO {
     
     //회원 정보수정(연락처 수정)
     public void updateCustPhone(int custId, String phone) {
-    	
+    	//고객 아이디를 참조하여 해당 고객의 연락철르 수정하는 쿼리
     	String sql = "update customer set cust_phone = ? where cust_id = ?";
     	
     	try {
@@ -276,7 +277,7 @@ public class CustomerDAO {
     }
     //회원 정보수정(주소 수정)
     public void updateCustAddr(int custId, String addr) {
-    	
+    	//고객아이디를 참조하여 해당 고객 주소를 수정하는 쿼리.
     	String sql = "update customer set cust_addr = ? where cust_id = ?;";
     	try {
     		Connection conn = ConnectionProvider.getConnection();
