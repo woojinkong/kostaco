@@ -65,7 +65,7 @@ public class SalesStatsRun {
 
                 case 0:
                     System.out.println("프로그램을 종료합니다.");
-                    sc.close();
+                    //sc.close();
                     return;
 
                 default:

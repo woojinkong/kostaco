@@ -117,7 +117,8 @@ public class ItemRun {
                     break;
 
                 case 4:
-                    System.out.println("제품을 입력해주세요.");
+                	//상품수정
+                    System.out.println("제품번호를 입력해주세요.");
                     int itemId = sc.nextInt();
                     System.out.println("수량을 입력해주세요.");
                     int qty = sc.nextInt();
@@ -126,6 +127,7 @@ public class ItemRun {
                     break;
 
                 case 5:
+                	//상품삭제
                     System.out.println("제품을 입력해주세요.");
                     itemDAO.deleteByName(sc.nextLine());
                     break;
