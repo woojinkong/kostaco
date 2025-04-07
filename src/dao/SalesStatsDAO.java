@@ -78,20 +78,24 @@ public class SalesStatsDAO {
     // 제조사별 월별 상품 판매 순위 조회 (Top 3)
     public List<SalesStatsVO> getMakerMonthlyItemRankings() {
         List<SalesStatsVO> list = new ArrayList<>();
-        String sql = "SELECT month, manufacturer, item_name, quantity_sold, total_sales, rank FROM ( " +
-                     "    SELECT TO_CHAR(o.created, 'YYYY-MM') AS month, " +
-                     "           i.item_manuf AS manufacturer, " +
-                     "           i.item_name, " +
-                     "           SUM(od.orders_qty) AS quantity_sold, " +
-                     "           SUM(od.orders_qty * od.orders_price) AS total_sales, " +
-                     "           RANK() OVER (PARTITION BY TO_CHAR(o.created, 'YYYY-MM'), i.item_manuf " +
-                     "                        ORDER BY SUM(od.orders_qty * od.orders_price) DESC) AS rank " +
-                     "    FROM orders o " +
-                     "    JOIN orders_detail od ON o.orders_id = od.orders_id " +
-                     "    JOIN item i ON od.item_id = i.item_id " +
-                     "    GROUP BY TO_CHAR(o.created, 'YYYY-MM'), i.item_manuf, i.item_name " +
-                     ") WHERE rank <= 3 " +
-                     "ORDER BY month, manufacturer, rank";
+        String sql = 
+            "SELECT * FROM ( " +
+            "    SELECT " +
+            "        TO_CHAR(o.created, 'YYYY-MM') AS month, " +
+            "        i.item_manuf AS manufacturer, " +
+            "        i.item_name, " +
+            "        SUM(od.orders_qty) AS quantity_sold, " +
+            "        SUM(od.orders_qty * od.orders_price) AS total_sales, " +
+            "        RANK() OVER (PARTITION BY i.item_manuf, TO_CHAR(o.created, 'YYYY-MM') " +
+            "                   ORDER BY SUM(od.orders_qty * od.orders_price) DESC) AS rnk " +
+            "    FROM orders o " +
+            "    JOIN orders_detail od ON o.orders_id = od.orders_id " +
+            "    JOIN item i ON od.item_id = i.item_id " +
+            "    GROUP BY TO_CHAR(o.created, 'YYYY-MM'), i.item_manuf, i.item_name " +
+            ") ranked " +
+            "WHERE rnk <= 3 " +
+            "ORDER BY manufacturer, month, rnk";
+
         try (Connection conn = ConnectionProvider.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
@@ -102,7 +106,7 @@ public class SalesStatsDAO {
                 String itemName = rs.getString("item_name");
                 int quantitySold = rs.getInt("quantity_sold");
                 int totalSales = rs.getInt("total_sales");
-                int rank = rs.getInt("rank");
+                int rank = rs.getInt("rㄴnk");
 
                 list.add(new SalesStatsVO(month, manufacturer, itemName, totalSales, quantitySold, rank));
             }

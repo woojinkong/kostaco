@@ -7,9 +7,9 @@ import dao.SalesStatsDAO;
 import vo.SalesStatsVO;
 
 public class SalesStatsRun {
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        SalesStatsDAO dao = new SalesStatsDAO();
+	
+	  public void salesStatsrun(Scanner sc) {
+	        SalesStatsDAO dao = new SalesStatsDAO();
 
         while (true) {
             System.out.println("╔══════════════════════════════════════╗");
