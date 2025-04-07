@@ -22,7 +22,7 @@ public class CustomerRun {
 			System.out.println(" 2. 회원 조회                     ");
 			System.out.println(" 3. 회원 수정                     ");
 			System.out.println(" 4. 회원 삭제                     ");
-			System.out.println(" 0. 종료                         ");
+			System.out.println(" 0. 뒤로 가기                      ");
 			System.out.println("╠═════════════KOSTACO═════════════╣");
 			System.out.print("입력 : ");
 			menu = sc.nextInt();
@@ -59,6 +59,8 @@ public class CustomerRun {
 				System.out.println("3. 특정날자, N번째 고객 조회");
 				System.out.println("4. 특정기간, 매출 VIP 고객 조회");
 				System.out.println("5. 특정상품, VIP 고객 조회");
+				System.out.println("0. 뒤로가기");
+				
 				System.out.println("╠═════════════KOSTACO═════════════╣");
 				System.out.print("입력 =>");
 				index = sc.nextInt();
@@ -174,6 +176,9 @@ public class CustomerRun {
 					}
 					break;
 					
+				case 0 :
+					return;
+					
 			}
 			break;
 			
@@ -186,6 +191,7 @@ public class CustomerRun {
 				System.out.println("╠═════════════KOSTACO═════════════╣");
 				System.out.println(" 1. 고객 연락처 수정                ");
 				System.out.println(" 2. 고객 주소 수정                  ");
+				System.out.println(" 0. 뒤로 가기                      ");
 				System.out.println("╠═════════════KOSTACO═════════════╣");
 				System.out.print(" 임력 =>");
 				int index3 = sc.nextInt();
@@ -220,6 +226,9 @@ public class CustomerRun {
 					customerDAO.updateCustPhone(custId2, custAddr);
 					
 					break;
+					
+				case 0:
+					return;
 				}
 				
 				break;
@@ -248,7 +257,7 @@ public class CustomerRun {
 				
 			case 0:
 				//종료
-			    System.out.println("프로그램을 종료합니다.");
+			    
 			    return;
 			}
 		}
