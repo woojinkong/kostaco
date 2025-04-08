@@ -153,7 +153,6 @@ public class OrdersDetailDAO {
 	//고객 번호를 받아 해당 고객이 가장 많이 구매한 물품을 찾고 해당 물품을 구매한 다른 고객들이 같이 구매한 다른 상품을 추천하며 이미 구매한 상품은 추천하지 않는다.
 	public List<Integer> getRecommendItem(int custId){
 		List<Integer> list = new ArrayList<Integer>();
-		
 		String sql = "SELECT distinct od1.item_id "
 		        	+ "FROM orders o1 "
 		        	+ "JOIN orders_detail od1 ON o1.orders_id = od1.orders_id "

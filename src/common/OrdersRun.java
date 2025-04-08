@@ -288,11 +288,14 @@ public class OrdersRun {
 				
 				System.out.print("검색할 고객 이름 입력: ");
 				popularCustName = sc.next();
-
-				System.out.print("회원 핸드폰 뒷자리 4개: ");
-				popularCustPhone = sc.next();
 				
-				popularCustId = customerDAO.findCustByNameAndPhone(popularCustName, popularCustPhone);
+				if (popularCustName.equals("비회원"))
+					popularCustId = 0;
+				else {
+					System.out.print("핸드폰 뒷자리 입력: ");
+					popularCustPhone = sc.next();
+					popularCustId = customerDAO.findCustByNameAndPhone(popularCustName, popularCustPhone);
+				}
 				
 				List<Integer> popularItemId = new ArrayList<Integer>();
 				List<ItemVO> popularItemList = new ArrayList<ItemVO>();
@@ -301,8 +304,6 @@ public class OrdersRun {
 				    System.out.println("해당 고객 정보를 찾을 수 없습니다.");
 				    break;
 				}
-
-				
 				popularItemId = ordersDetailDAO.getPopularItem(popularCustId);
 				
 				for(int no : popularItemId) {
@@ -324,12 +325,14 @@ public class OrdersRun {
 				
 				System.out.print("검색할 고객 이름 입력: ");
 				recommendCustName = sc.next();
-
-				System.out.print("회원 핸드폰 뒷자리 4개: ");
-				recommendCustPhone = sc.next();
 				
-				recommendCustId = customerDAO.findCustByNameAndPhone(recommendCustName, recommendCustPhone);
-				
+				if (recommendCustName.equals("비회원"))
+					recommendCustId = 0;
+				else {
+					System.out.print("핸드폰 뒷자리 입력: ");
+					recommendCustPhone = sc.next();
+					recommendCustId = customerDAO.findCustByNameAndPhone(recommendCustName, recommendCustPhone);
+				}
 				List<Integer> recommendItemId = new ArrayList<Integer>();
 				List<ItemVO> recommendItemList = new ArrayList<ItemVO>();
 				
