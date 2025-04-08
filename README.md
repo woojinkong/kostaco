@@ -113,7 +113,7 @@ src/
 ## ✍️ GitHub 활용 기록
 
 - GitHub 초기화 및 README 생성
-- VS Code 또는 Eclipse에서 프로젝트 관리
+- Eclipse에서 프로젝트 관리
 - `.gitignore`, `.md`, 버전 커밋 및 푸시 실습
 
 ---
