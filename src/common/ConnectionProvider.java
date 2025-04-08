@@ -24,6 +24,17 @@ public class ConnectionProvider {
         return conn;
 
     }
+    
+	public static Connection getConnection(String username, String password) {
+		Connection conn = null;
+		try {
+			Class.forName(driver);
+			conn = DriverManager.getConnection(url, username, password);
+		}catch (Exception e) {
+			System.out.println("예외발생:"+e.getMessage());
+		}
+		return conn;
+	}
 
     public static void close(Connection conn, Statement stmt, ResultSet rs) {
         try {
