@@ -50,7 +50,8 @@
 ## 🗃️ 테이블 구조
 
 
-![image](https://github.com/user-attachments/assets/94faa544-39b8-4299-9378-a54ccdb0b288)
+![image](https://github.com/user-attachments/assets/125d528f-557c-4795-8077-a13eaf818481)
+
 
 
 
