@@ -47,16 +47,11 @@
 
 ---
 
-## 🗃️ 테이블 구조 예시
+## 🗃️ 테이블 구조
 
-### 📁 `item` 테이블
 
-| 컬럼명       | 타입        | 설명           |
-|--------------|-------------|----------------|
-| item_id      | NUMBER      | 상품 ID (PK)   |
-| name         | VARCHAR2    | 상품 이름      |
-| maker        | VARCHAR2    | 제조사         |
-| price        | NUMBER      | 가격           |
+![image](https://github.com/user-attachments/assets/6c1188cc-d738-47d2-8880-17350dcaf548)
+
 
 > ※ 제조사는 5개로 제한되어 목업 데이터 구성
 
