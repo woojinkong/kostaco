@@ -1,4 +1,4 @@
-
+![image](https://github.com/user-attachments/assets/b2839382-d19c-4ab4-9ca1-78ce4eb8744c)
 # 🏷️ KOSTA 주문/판매 관리 시스템
 
 > **Java + Oracle 기반으로 구축한 주문 및 판매 통계 관리 프로젝트**  
@@ -50,7 +50,8 @@
 ## 🗃️ 테이블 구조
 
 
-![image](https://github.com/user-attachments/assets/125d528f-557c-4795-8077-a13eaf818481)
+![image](https://github.com/user-attachments/assets/9ba220e6-e625-4d13-a5b8-5b02d647f2d9)
+
 
 
 
