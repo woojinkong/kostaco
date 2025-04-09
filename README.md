@@ -50,7 +50,8 @@
 ## 🗃️ 테이블 구조
 
 
-![image](https://github.com/user-attachments/assets/6c1188cc-d738-47d2-8880-17350dcaf548)
+![image](https://github.com/user-attachments/assets/94faa544-39b8-4299-9378-a54ccdb0b288)
+
 
 
 > ※ 제조사는 5개로 제한되어 목업 데이터 구성
